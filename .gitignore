@@ -1,2 +1,5 @@
 requests
 credentials.json
+.env
+__pycache__/
+*.pyc
