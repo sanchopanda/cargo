@@ -9,4 +9,3 @@ def extract_city(address):
     if len(parts) >= 2:
         return parts[-2].strip()
     return parts[-1].strip()
-    
