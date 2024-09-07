@@ -5,6 +5,17 @@
 pip install -r requirements.txt
 ```
 
+## Создание и активация виртуального окружения
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+## Установка dotenv
+```bash
+pip install python-dotenv
+```
+
 ## Установка переменных
 
 Создайте файл .env, пример содержимого
@@ -19,7 +30,10 @@ PASSWORD = "SY61kIX4v6Kk3K"
 
 ## Установка credential для гугл таблиц
 
-Если хотим сохранять данные в гугл таблица то Даня тут с тебя
+1. Создать проект в Google Cloud Console
+2. Включить Google Sheets API для вашего проекта.
+3. Создайте учетные данные OAuth 2.0 и получите файл credentials.json
+4. Выдать доступ к таблице боту, почта в файле credentials.json
 
 ## Запуск скрипта
 
