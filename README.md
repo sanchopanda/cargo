@@ -11,10 +11,6 @@ pip install -r requirements.txt
 python -m venv venv
 venv\Scripts\activate
 ```
-## Установка dotenv
-```bash
-pip install python-dotenv
-```
 
 ## Установка переменных
 
