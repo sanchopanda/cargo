@@ -25,6 +25,8 @@ PASSWORD = "SY61kIX4v6Kk3K"
 
 ## Установка credential для гугл таблиц
 
+Необходимо если нужно сохранять данные в гугл таблицу
+
 1. Создать проект в Google Cloud Console
 2. Включить Google Sheets API для вашего проекта.
 3. Создайте учетные данные OAuth 2.0 и получите файл credentials.json
