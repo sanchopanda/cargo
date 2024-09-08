@@ -18,7 +18,6 @@ pip install -r requirements.txt
 
 ```code
 API_BASE_HOST = "https://testdev2.logistpro.su"
-API_BASE_URL = f"{API_BASE_HOST}/api/v1/"
 API_KEY = "cCwnQ8BxKCMlPsN7thVhdtou2PiJzZE46atEQwlehaQ="
 LOGIN = "ext.customer.7@logistpro.su"
 PASSWORD = "SY61kIX4v6Kk3K"
@@ -38,4 +37,17 @@ PASSWORD = "SY61kIX4v6Kk3K"
 python main.py
 ```
 
+## Параметры
 
+
+### Запись данных в гугл таблицу
+
+```bash
+python main.py --write-to-sheet
+```
+
+### Цикличный запуск
+
+```bash
+python main.py --cycle
+```
