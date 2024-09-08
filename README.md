@@ -1,15 +1,15 @@
-## Установка зависимостей
-
-
-```bash
-pip install -r requirements.txt
-```
-
 ## Создание и активация виртуального окружения
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
+```
+
+## Установка зависимостей
+
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Установка переменных
@@ -35,7 +35,7 @@ PASSWORD = "SY61kIX4v6Kk3K"
 
 
 ```bash
-python test.py
+python main.py
 ```
 
 
