@@ -6,15 +6,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from cookie_manager import save_cookies
+from config import LOGIN_URL, MAIN_URL, CHROME_DRIVER_PATH, SELENIUM_WAIT_TIMEOUT
 
-# Функция для авторизации через Selenium и сохранения кук
 def login_and_save_cookies(cookie_file):
+    """Функция для авторизации через Selenium и сохранения кук.
+
+    Args:
+        cookie_file (str): Путь к файлу для сохранения кук.
+    """
     # Настройки драйвера Chrome
     chrome_options = Options()
     # chrome_options.add_argument("--headless")  # запуск без интерфейса, если нужно
-    service = Service(executable_path=r'C:/Users/Даниил/Documents/GitHub/logistpro/chromedriver-win64/chromedriver.exe')
+    service = Service(executable_path=CHROME_DRIVER_PATH)
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.get("https://lk.logistpro.su/Account/Login")  # URL страницы входа
+    driver.get(LOGIN_URL)  # URL страницы входа
 
     # Ввод логина и пароля
     username = driver.find_element(By.ID, "UserName")
@@ -24,11 +29,11 @@ def login_and_save_cookies(cookie_file):
 
     # Дождаться вручную прохождения капчи и нажатия на кнопку входа
     print("Пройдите капчу и нажмите 'Войти'.")
-    
+
     try:
         # Ожидаем, что после авторизации браузер перейдет на главную страницу
-        WebDriverWait(driver, 300).until(
-            EC.url_to_be("https://lk.logistpro.su/")  # Проверяем переход на URL главной страницы
+        WebDriverWait(driver, SELENIUM_WAIT_TIMEOUT).until(
+            EC.url_to_be(MAIN_URL)  # Проверяем переход на URL главной страницы
         )
         print("Авторизация прошла успешно!")
     except:
