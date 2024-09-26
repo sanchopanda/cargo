@@ -19,7 +19,7 @@ MAIN_URL = "https://lk.logistpro.su/"
 AUTHORIZATION_TOKEN = '83b0d3bc20244d56a43404e9b8fe694a'  # Замените на актуальный токен
 
 # Путь к драйверу Chrome
-CHROME_DRIVER_PATH = r'C:/Users/Даниил/Documents/GitHub/logistpro/chromedriver-win64/chromedriver.exe'
+CHROME_DRIVER_PATH = r'/chromedriver-win64/chromedriver.exe'
 
 # Настройки Selenium
 SELENIUM_WAIT_TIMEOUT = 300  # Время ожидания в секундах

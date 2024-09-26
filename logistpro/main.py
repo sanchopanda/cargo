@@ -4,11 +4,12 @@ import json
 import logging
 from datetime import datetime
 import re
-
+from dotenv import load_dotenv
 from cookie_manager import load_cookies
 from auth import login_and_save_cookies
 from data_manager import load_processed_ids
 from parser import parse_application
+from request_builder import create_request_body
 from config import (
     COOKIE_FILE,
     DATA_URL,
@@ -84,6 +85,9 @@ def get_data_with_cookies():
 
 def main():
     """Основная функция программы."""
+    # Настройка логирования
+    logging.basicConfig(level=logging.DEBUG)  # Установлен уровень DEBUG для отображения всех сообщений
+
     # Загрузка обработанных ID при запуске скрипта
     processed_ids = load_processed_ids()
 
@@ -91,12 +95,22 @@ def main():
 
     if data is not None and 'Items' in data:
         applications_dict = {}
+        request_bodies = {}  # Словарь для хранения тел запросов
 
         for application in data['Items']:
             parsed_application = parse_application(application, processed_ids, AUTHORIZATION_TOKEN)
             if parsed_application:
                 app_id = parsed_application['Id']
                 applications_dict[app_id] = parsed_application
+
+                # Создаем тело запроса
+                request_body = create_request_body(parsed_application)
+                request_bodies[app_id] = request_body
+
+                # Выводим тело запроса для проверки
+                logging.debug(f"Тело запроса для заявки {app_id}: {json.dumps(request_body, ensure_ascii=False, indent=4)}")
+                print(f"Тело запроса для заявки {app_id}:")
+                print(json.dumps(request_body, ensure_ascii=False, indent=4))
 
         logging.info(f"Все распарсенные заявки: {json.dumps(applications_dict, indent=4, ensure_ascii=False)}")
         print(json.dumps(applications_dict, indent=4, ensure_ascii=False))

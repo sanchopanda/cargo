@@ -1,9 +1,13 @@
 import requests
 import json
 import logging
-from config import ATI_API_URL, AUTHORIZATION_TOKEN
+import os
+from config import ATI_API_URL
+from dotenv import load_dotenv
 
-def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authorization_token=AUTHORIZATION_TOKEN):
+load_dotenv()
+
+def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authorization_token=os.getenv("AUTHORIZATION_TOKEN")):
     """
     Получает CityID для списка адресов через ATI API.
 
