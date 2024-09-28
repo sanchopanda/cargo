@@ -12,39 +12,25 @@ def create_request_body(parsed_application):
         loading_waypoints = [wp for wp in ati_waypoints if wp.get('type') == 'loading']
         unloading_waypoints = [wp for wp in ati_waypoints if wp.get('type') == 'unloading']
 
+        # Обработка way_points согласно требованиям
+        if len(ati_waypoints) > 2:
+            processed_waypoints = ati_waypoints[1:-1]
+        else:
+            processed_waypoints = None
+
+        route = {
+            "loading": loading_waypoints[0] if loading_waypoints else {},
+            "unloading": unloading_waypoints[-1] if unloading_waypoints else {},
+            "is_round_trip": False
+        }
+
+        if processed_waypoints:
+            route["way_points"] = processed_waypoints
+
         request_body = {
             "cargo_application": {
                 "external_id": parsed_application.get('Id', 'Не указано'),
-                "route": {
-                    "loading": loading_waypoints[0] if loading_waypoints else {},
-                    "unloading": unloading_waypoints[-1] if unloading_waypoints else {},
-                    "is_round_trip": False,
-                    "way_points": ati_waypoints,
-                    "body_types": parsed_application.get('CargoTypeID', 'Не указано'),
-                    "body_loading": {
-                        "types": parsed_application.get('LoadingTypeID', 'Не указано'),
-                        "is_all_required": True
-                    },
-                    "body_unloading": {
-                        "types": parsed_application.get('LoadingTypeID', 'Не указано'),  # Используем LoadingTypeID для выгрузки
-                        "is_all_required": True
-                    },
-                    "documents": {
-                        "tir": True,
-                        "cmr": True,
-                        "t1": False,
-                        "medical_card": False
-                    },
-                    "requirements": {
-                        "logging_truck": False,
-                        "road_train": False,
-                        "air_suspension": True
-                    },
-                    "adr": 3,
-                    "belts_count": 4,
-                    "is_tracking": True,
-                    "required_capacity": 15
-                },
+                "route": route,
                 "truck": {
                     "trucks_count": 1,
                     "load_type": "ftl",
@@ -95,7 +81,6 @@ def create_request_body(parsed_application):
                     "bid_step": 10,
                     "auction_duration": {
                         "fixed_duration": "1h",
-                        "end_time": "2024-09-21T12:00:00.000Z"
                     },
                     "accept_counter_offers": True,
                     "auto_renew": {
