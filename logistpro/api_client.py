@@ -24,12 +24,15 @@ def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authori
         "Content-Type": "application/json"
     }
 
-    # Формируем тело запроса
-    body = list(unique_loading_addresses) + list(unique_unloading_addresses)
+    # Объединяем загружаемые и выгружаемые адреса, убирая дубликаты
+    all_unique_addresses = unique_loading_addresses.union(unique_unloading_addresses)
+    body = list(all_unique_addresses)
     logging.info(f"Запрос к API с телом: {json.dumps(body, ensure_ascii=False)}")
+    logging.debug(f"Количество уникальных адресов: {len(all_unique_addresses)}")
 
     try:
         response = requests.post(ATI_API_URL, headers=headers, data=json.dumps(body), timeout=15)
+        logging.debug(f"Ответ от API: {response.status_code} - {response.text}")
         if response.status_code == 200:
             data = response.json()
             logging.info(f"Ответ от API: {json.dumps(data, ensure_ascii=False, indent=4)}")
@@ -42,6 +45,7 @@ def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authori
                     city_id_mapping[address] = city_id
                 else:
                     city_id_mapping[address] = "Не указано"
+            logging.debug(f"Сопоставление city_id: {json.dumps(city_id_mapping, ensure_ascii=False, indent=4)}")
             return city_id_mapping
         else:
             logging.error(f"Ошибка при запросе к ATI API: {response.status_code} - {response.text}")

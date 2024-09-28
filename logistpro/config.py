@@ -1,5 +1,4 @@
-# config.py
-
+import os
 import logging
 
 # Настройка логирования
@@ -16,12 +15,12 @@ LOGIN_URL = "https://lk.logistpro.su/Account/Login"
 MAIN_URL = "https://lk.logistpro.su/"
 
 # Авторизационный токен
-AUTHORIZATION_TOKEN = '83b0d3bc20244d56a43404e9b8fe694a'  # Замените на актуальный токен
+AUTHORIZATION_TOKEN = os.getenv('AUTHORIZATION_TOKEN', '83b0d3bc20244d56a43404e9b8fe694a')
 
 # Путь к драйверу Chrome
-CHROME_DRIVER_PATH = r'/chromedriver-win64/chromedriver.exe'
+CHROME_DRIVER_PATH = r'\chromedriver-win64\chromedriver.exe'
 
 # Настройки Selenium
-SELENIUM_WAIT_TIMEOUT = 300  # Время ожидания в секундах
+SELENIUM_WAIT_TIMEOUT = 300
 
-
+# Время ожидания в секундах
