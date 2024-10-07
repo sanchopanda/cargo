@@ -17,11 +17,17 @@ def add_cookies_to_session(session, cookie_file):
         bool: True, если куки успешно загружены и добавлены, иначе False.
     """
     if os.path.exists(cookie_file) and os.path.getsize(cookie_file) > 0:
-        # Загружаем куки из файла
-        cookies = load_cookies(cookie_file)
-        for cookie in cookies:
-            session.cookies.set(cookie['name'], cookie['value'])
-        return True
+        try:
+            # Загружаем куки из файла
+            cookies = load_cookies(cookie_file)
+            for cookie in cookies:
+                session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain'))
+            logging.info("Куки успешно добавлены в сессию.")
+            return True
+        except Exception as e:
+            logging.error(f"Не удалось добавить куки в сессию: {e}")
+            return False
+    logging.info("Файл с куками отсутствует или пуст.")
     return False
 
 def get_data_with_cookies(cookie_file):
@@ -34,34 +40,39 @@ def get_data_with_cookies(cookie_file):
 
     # Пытаемся загрузить куки и сделать запрос
     if add_cookies_to_session(session, cookie_file):
+        logging.info("Отправка запроса с использованием существующих кук.")
         response = session.get(DATA_URL)
-        # Если запрос успешен, выводим результат
+
         if response.status_code == 200:
             try:
-                data = response.json()  # Попытка распарсить JSON
+                data = response.json()
+                logging.info("Данные успешно получены с API.")
+                return data
             except json.JSONDecodeError:
-                logging.error("Ошибка парсинга JSON")
+                logging.error("Ошибка парсинга JSON.")
                 return None
-            return data
-        elif response.status_code == 403:
-            logging.info("Получен статус 403, требуется авторизация...")
+        elif response.status_code in (403, 401):
+            logging.info(f"Получен статус {response.status_code}, требуется авторизация...")
         else:
             logging.error(f"Ошибка: {response.status_code}")
             return None
     else:
         logging.info("Файл с куками отсутствует или пуст.")
 
-    # Если куки не подходят (403) или их нет, авторизуемся через Selenium
+    # Если куки не подходят (403 или 401) или их нет, авторизуемся через Selenium
     login_and_save_cookies(cookie_file)
+    
     # Повторяем запрос с новыми куками
     if add_cookies_to_session(session, cookie_file):
+        logging.info("Отправка запроса после авторизации.")
         response = session.get(DATA_URL)
         if response.status_code == 200:
             try:
-                data = response.json()  # Повторная попытка распарсить JSON
+                data = response.json()
+                logging.info("Данные успешно получены после авторизации.")
                 return data
             except json.JSONDecodeError:
-                logging.error("Ошибка парсинга JSON после авторизации")
+                logging.error("Ошибка парсинга JSON после авторизации.")
                 return None
         else:
             logging.error(f"Ошибка после авторизации: {response.status_code}")

@@ -9,7 +9,7 @@ load_dotenv()
 
 def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authorization_token=os.getenv("AUTHORIZATION_TOKEN")):
     """
-    Получает CityID для списка адресов через ATI API.
+    Получает CityID и Street для списка адресов через ATI API.
 
     Args:
         unique_loading_addresses (set): Множество уникальных адресов для погрузки.
@@ -17,7 +17,7 @@ def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authori
         authorization_token (str): Токен авторизации для API.
 
     Returns:
-        Dict[str, int]: Словарь, где ключ - адрес, значение - CityID или "Не указано".
+        Dict[str, Dict[str, Any]]: Словарь, где ключ - исходный адрес, значение - словарь с 'city_id' и 'street' или "Не указано".
     """
     headers = {
         "Authorization": f"Bearer {authorization_token}",
@@ -31,25 +31,32 @@ def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authori
     logging.debug(f"Количество уникальных адресов: {len(all_unique_addresses)}")
 
     try:
-        response = requests.post(ATI_API_URL, headers=headers, data=json.dumps(body), timeout=15)
+        response = requests.post(ATI_API_URL, headers=headers, data=json.dumps(body, ensure_ascii=False), timeout=15)
         logging.debug(f"Ответ от API: {response.status_code} - {response.text}")
         if response.status_code == 200:
             data = response.json()
             logging.info(f"Ответ от API: {json.dumps(data, ensure_ascii=False, indent=4)}")
 
-            city_id_mapping = {}
+            city_info_mapping = {}
             for address in body:
                 address_info = data.get(address, {})
                 if address_info.get('is_success'):
                     city_id = address_info.get('city_id', "Не указано")
-                    city_id_mapping[address] = city_id
+                    street = address_info.get('street') if address_info.get('street') else None
+                    city_info_mapping[address] = {
+                        "city_id": city_id,
+                        "street": street
+                    }
                 else:
-                    city_id_mapping[address] = "Не указано"
-            logging.debug(f"Сопоставление city_id: {json.dumps(city_id_mapping, ensure_ascii=False, indent=4)}")
-            return city_id_mapping
+                    city_info_mapping[address] = {
+                        "city_id": "Не указано",
+                        "street": None
+                    }
+            logging.debug(f"Сопоставление city_id и street: {json.dumps(city_info_mapping, ensure_ascii=False, indent=4)}")
+            return city_info_mapping
         else:
             logging.error(f"Ошибка при запросе к ATI API: {response.status_code} - {response.text}")
-            return {address: "Не указано" for address in body}
+            return {address: {"city_id": "Не указано", "street": None} for address in body}
     except requests.RequestException as e:
         logging.error(f"Исключение при запросе к ATI API: {e}")
-        return {address: "Не указано" for address in body}
+        return {address: {"city_id": "Не указано", "street": None} for address in body}

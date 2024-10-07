@@ -8,8 +8,13 @@ import os
 from cookie_manager import save_cookies
 from config import LOGIN_URL, MAIN_URL, CHROME_DRIVER_PATH, SELENIUM_WAIT_TIMEOUT
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
+
+# Настройка логирования
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 def login_and_save_cookies(cookie_file):
     """Функция для авторизации через Selenium и сохранения кук.
@@ -17,31 +22,56 @@ def login_and_save_cookies(cookie_file):
     Args:
         cookie_file (str): Путь к файлу для сохранения кук.
     """
+    logger.info("Запуск процесса авторизации через Selenium.")
+    
     # Настройки драйвера Chrome
     chrome_options = Options()
     # chrome_options.add_argument("--headless")  # запуск без интерфейса, если нужно
     service = Service(executable_path=CHROME_DRIVER_PATH)
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    
+    try:
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+    except Exception as e:
+        logger.error(f"Не удалось инициализировать WebDriver: {e}")
+        return
+
     driver.get(LOGIN_URL)  # URL страницы входа
-
-    # Ввод логина и пароля
-    username = driver.find_element(By.ID, "UserName")
-    password = driver.find_element(By.ID, "Password")
-    username.send_keys(os.getenv("USERNAME"))
-    password.send_keys(os.getenv("PASSWORD"))
-
-    # Дождаться вручную прохождения капчи и нажатия на кнопку входа
-    print("Пройдите капчу и нажмите 'Войти'.")
+    logger.info(f"Открыт URL: {LOGIN_URL}")
 
     try:
-        # Ожидаем, что после авторизации браузер перейдет на главную страницу
+        # Ввод логина и пароля
+        logger.info("Ввод логина и пароля.")
+        username = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "UserName"))
+        )
+        password = driver.find_element(By.ID, "Password")
+        username.send_keys(os.getenv("LOGIN"))
+        password.send_keys(os.getenv("PASSWORD"))
+        logger.info("Логин и пароль введены.")
+
+        # Дождаться вручную прохождения капчи и нажатия на кнопку входа
+        logger.info("Пройдите капчу и нажмите 'Войти'.")
+        print("Пройдите капчу и нажмите 'Войти'.")
+
+        # Ожидание перенаправления на главную страницу после авторизации
         WebDriverWait(driver, SELENIUM_WAIT_TIMEOUT).until(
             EC.url_to_be(MAIN_URL)  # Проверяем переход на URL главной страницы
         )
-        print("Авторизация прошла успешно!")
-    except:
-        print("Таймаут ожидания или авторизация не удалась. Проверьте корректность действий.")
+        logger.info("Авторизация прошла успешно!")
 
-    # Сохраняем куки после успешного перехода
-    save_cookies(driver, cookie_file)
-    driver.quit()
+    except Exception as e:
+        logger.error(f"Ошибка в процессе авторизации: {e}")
+    finally:
+        # Сохраняем куки после успешного перехода
+        try:
+            save_cookies(driver, cookie_file)
+            logger.info(f"Куки сохранены в {cookie_file}.")
+        except Exception as e:
+            logger.error(f"Не удалось сохранить куки: {e}")
+        driver.quit()
+        logger.info("Браузер закрыт.")
+
+# Добавляем возможность запуска скрипта отдельно для отладки
+if __name__ == "__main__":
+    from config import COOKIE_FILE
+    login_and_save_cookies(COOKIE_FILE)

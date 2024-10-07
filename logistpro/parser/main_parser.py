@@ -3,7 +3,7 @@ import json
 from api_client import fetch_city_ids
 from data_manager import save_processed_ids
 from .cargo_parser import parse_cargo_parameters
-from .transport_parser import parse_transport_summary
+from .transport_parser import parse_transport_summary, convert_date
 from .route_parser import parse_route
 
 
@@ -58,17 +58,25 @@ def parse_application(application, processed_ids, authorization_token):
     logging.info(f"Уникальные адреса для загрузки: {unique_loading_addresses}")
     logging.info(f"Уникальные адреса для выгрузки: {unique_unloading_addresses}")
 
-    # Получаем CityID для всех адресов
-    city_ids = fetch_city_ids(
+    # Получаем CityID и Street для всех адресов
+    city_info = fetch_city_ids(
         unique_loading_addresses=unique_loading_addresses,
         unique_unloading_addresses=unique_unloading_addresses,
         authorization_token=authorization_token
     )
-    logging.debug(f"Полученные city_ids: {json.dumps(city_ids, ensure_ascii=False, indent=4)}")
+    logging.debug(f"Полученные city_info: {json.dumps(city_info, ensure_ascii=False, indent=4)}")
 
-    # Назначаем city_id каждой точке маршрута
+    # Назначаем city_id и street каждой точке маршрута
     for wp in waypoints:
-        wp['city_id'] = city_ids.get(wp['address'], "Не указано")
+        original_address = wp.get('address', 'Не указано')
+        info = city_info.get(original_address, {})
+        wp['city_id'] = info.get('city_id', "Не указано")
+        
+        street = info.get('street')
+        if street:
+            wp['address'] = street
+        else:
+            wp.pop('address', None)  # Удаляем 'address', если 'street' отсутствует
 
     parsed_data = {
         'Id': application_id,

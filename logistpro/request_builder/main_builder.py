@@ -119,7 +119,6 @@ def create_request_body(parsed_application):
                     }
                 ],
                 "note": f"{convert_to_single(parsed_application.get('Id', 'Не указано'))}",
-                "contacts": [0]
             }
         }
 
