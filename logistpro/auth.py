@@ -41,13 +41,13 @@ def login_and_save_cookies(cookie_file):
     try:
         # Ввод логина и пароля
         logger.info("Ввод логина и пароля.")
-        username = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "UserName"))
-        )
-        password = driver.find_element(By.ID, "Password")
-        username.send_keys(os.getenv("LOGIN"))
-        password.send_keys(os.getenv("PASSWORD"))
-        logger.info("Логин и пароль введены.")
+        # username = WebDriverWait(driver, 10).until(
+        #     EC.presence_of_element_located((By.ID, "UserName"))
+        # )
+        # password = driver.find_element(By.ID, "Password")
+        # username.send_keys(os.getenv("LOGIN"))
+        # password.send_keys(os.getenv("PASSWORD"))
+        # logger.info("Логин и пароль введены.")
 
         # Дождаться вручную прохождения капчи и нажатия на кнопку входа
         logger.info("Пройдите капчу и нажмите 'Войти'.")

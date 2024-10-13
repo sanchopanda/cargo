@@ -15,10 +15,11 @@ LOGIN_URL = "https://lk.logistpro.su/Account/Login"
 MAIN_URL = "https://lk.logistpro.su/"
 
 # Авторизационный токен
-AUTHORIZATION_TOKEN = os.getenv('AUTHORIZATION_TOKEN', '1e013aa1d9e0421ca269cd0643d560a4')
+AUTHORIZATION_TOKEN = os.getenv('AUTHORIZATION_TOKEN', '012048bb93104026a60064f7b3898580')
 
 # Путь к драйверу Chrome
-CHROME_DRIVER_PATH = r'\chromedriver-win64\chromedriver.exe'
+script_dir = os.path.dirname(os.path.abspath(__file__))
+CHROME_DRIVER_PATH = os.path.join(script_dir, './chromedriver-win64', 'chromedriver.exe')
 
 # Настройки Selenium
 SELENIUM_WAIT_TIMEOUT = 300
