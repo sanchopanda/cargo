@@ -21,7 +21,7 @@ def process_applications(data, authorization_token):
     for application in data.get('Items', []):
         parsed_application = parse_application(application, processed_ids, authorization_token)
         if parsed_application:
-            app_id = parsed_application['Id']
+            app_id = parsed_application['Number']
             applications_dict[app_id] = parsed_application
 
             # Создаем тело запроса
