@@ -31,7 +31,7 @@ def fetch_city_ids(unique_loading_addresses, unique_unloading_addresses, authori
     logging.debug(f"Количество уникальных адресов: {len(all_unique_addresses)}")
 
     try:
-        response = requests.post(ATI_API_URL, headers=headers, data=json.dumps(body, ensure_ascii=False), timeout=15)
+        response = requests.post(ATI_API_URL, headers=headers, data=json.dumps(body), timeout=15)
         logging.debug(f"Ответ от API: {response.status_code} - {response.text}")
         if response.status_code == 200:
             data = response.json()

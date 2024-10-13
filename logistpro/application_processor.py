@@ -28,11 +28,4 @@ def process_applications(data, authorization_token):
             request_body = create_request_body(parsed_application)
             request_bodies[app_id] = request_body
 
-            # Выводим тело запроса для проверки
-            logging.debug(f"Тело запроса для заявки {app_id}: {json.dumps(request_body, ensure_ascii=False, indent=4)}")
-            print(f"Тело запроса для заявки {app_id}:")
-            print(json.dumps(request_body, ensure_ascii=False, indent=4))
-
-    logging.info(f"Все распарсенные заявки: {json.dumps(applications_dict, indent=4, ensure_ascii=False)}")
-    print(json.dumps(applications_dict, indent=4, ensure_ascii=False))
     return applications_dict, request_bodies

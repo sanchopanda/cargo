@@ -93,8 +93,6 @@ def parse_application(application, processed_ids, authorization_token):
         'WayPoints': waypoints
     }
 
-    logging.info(f"Распарсенные данные заявки: {json.dumps(parsed_data, ensure_ascii=False, indent=4)}")
-
     # Добавляем ID заявки в набор обработанных
     processed_ids.add(application_id)
     save_processed_ids(processed_ids)
